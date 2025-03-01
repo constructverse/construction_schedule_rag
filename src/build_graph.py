@@ -26,6 +26,9 @@ for task in data:
                 G.add_edge(pred_id, current_node)
 
 
+# we need to have a database to store the graph, for now it just runs and goes away
+
+
 
 # ####################### Visualize the graph #########################
 # plt.figure(figsize=(20, 15))

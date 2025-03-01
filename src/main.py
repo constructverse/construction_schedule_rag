@@ -4,6 +4,7 @@ from datetime import datetime
 from src.xml_parser import convert_xml_to_json
 from src.filter_by_date import filter_activities_by_date
 from src.visualized_filterd_activities import visualize_activities
+from src.build_graph import build_graph
 
 # File paths
 DATA_FOLDER = "src/data"
@@ -44,6 +45,10 @@ def main():
     # Step 3: Visualize Activities
     print("\n[Step 3] Visualizing activities...")
     visualize_activities(FILTERED_JSON_FILE, target_date)
+
+    # step 4: Build Graph
+    print("\n[Step 4] Building graph...")
+    build_graph(FILTERED_JSON_FILE)
 
 
 if __name__ == "__main__":
