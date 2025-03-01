@@ -1,3 +1,12 @@
+
+# -*- coding: utf-8 -*-
+
+"""
+
+Created by: Yoonhwa Jung
+
+"""
+
 import json
 from datetime import datetime, timedelta
 
