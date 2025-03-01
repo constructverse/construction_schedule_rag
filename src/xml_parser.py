@@ -20,7 +20,12 @@ def get_namespace(xml_file):
     return None  # Return None if no namespace is found
 
 # Example usage
+<<<<<<< HEAD:xml_parser.py
 xml_file = "UofMAthletesVillage.xml"
+=======
+# xml_file = "UofMAthletesVillage.xml"
+xml_file = "data/UofMAthletesVillage.xml"
+>>>>>>> b1ee957 (updated graph building):src/xml_parser.py
 namespace = get_namespace(xml_file)
 print(f"Extracted Namespace: {namespace}")
 
