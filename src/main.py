@@ -1,6 +1,9 @@
 import os
 import json
 from datetime import datetime
+
+import sys
+sys.path.append(".")
 from src.xml_parser import convert_xml_to_json
 from src.filter_by_date import filter_activities_by_date
 from src.visualized_filterd_activities import visualize_activities
