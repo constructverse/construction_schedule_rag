@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+"""
+
+Created by: Yoonhwa Jung
+
+"""
+
 import json
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
