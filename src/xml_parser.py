@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+"""
+
+Created by: Yoonhwa Jung
+
+"""
+
 import xml.etree.ElementTree as ET
 import json
 
