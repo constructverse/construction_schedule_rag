@@ -20,12 +20,7 @@ def get_namespace(xml_file):
     return None  # Return None if no namespace is found
 
 # Example usage
-<<<<<<< HEAD:xml_parser.py
-xml_file = "UofMAthletesVillage.xml"
-=======
-# xml_file = "UofMAthletesVillage.xml"
-xml_file = "data/UofMAthletesVillage.xml"
->>>>>>> b1ee957 (updated graph building):src/xml_parser.py
+xml_file = "../data/UofMAthletesVillage.xml"
 namespace = get_namespace(xml_file)
 print(f"Extracted Namespace: {namespace}")
 
@@ -99,6 +94,7 @@ for relationship in root.findall(".//ns:Relationship", ns):
 activities = []
 for i, activity in enumerate(root.findall(".//ns:Activity", ns), start=1):
     obj_id = activity.find("ns:ObjectId", ns)
+    percent_complete = activity.find("ns:PercentComplete", ns)
     name = activity.find("ns:Name", ns)
     planned_duration = activity.find("ns:PlannedDuration", ns)
     planned_start_date = activity.find("ns:PlannedStartDate", ns)
@@ -118,6 +114,7 @@ for i, activity in enumerate(root.findall(".//ns:Activity", ns), start=1):
         i: {
             "name": name.text if name is not None else "NaN",
             "ObjectId": obj_id_text,
+            "Percentage_complete": float(percent_complete.text) * 100 if percent_complete.text is not None else 0,
             "actual_start": actual_start_date.text if actual_start_date is not None else "NaN",
             "actual_end": actual_finish_date.text if actual_finish_date is not None else "NaN",
             "planned_duration": planned_duration.text if planned_duration is not None else "NaN",
