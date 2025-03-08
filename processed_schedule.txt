@@ -1,0 +1,454 @@
+Task Name: Backfill
+Object ID: 101717
+Planned Start: 2022-08-15T08:00:00
+Planned End: 2022-08-15T16:00:00
+Duration: 8 hours
+Predecessors: Pouring concrete for footings
+Successors: Form in place for slab on grade
+--------------------------------------------------
+Task Name: Form in place for slab on grade
+Object ID: 101718
+Planned Start: 2022-08-16T08:00:00
+Planned End: 2022-08-16T16:00:00
+Duration: 8 hours
+Predecessors: Backfill
+Successors: Slab reinforcement (welded wire fabric), Applying vapor retarders (polyethylene vapor barrier) for slabs and reinforcing concrete slab
+--------------------------------------------------
+Task Name: Applying vapor retarders (polyethylene vapor barrier) for slabs and reinforcing concrete slab
+Object ID: 101719
+Planned Start: 2022-08-17T08:00:00
+Planned End: 2022-08-18T16:00:00
+Duration: 16 hours
+Predecessors: Form in place for slab on grade
+Successors: Pouring concrete for slab
+--------------------------------------------------
+Task Name: Pouring concrete for slab
+Object ID: 101720
+Planned Start: 2022-08-19T08:00:00
+Planned End: 2022-08-19T16:00:00
+Duration: 8 hours
+Predecessors: Slab reinforcement (welded wire fabric), Applying vapor retarders (polyethylene vapor barrier) for slabs and reinforcing concrete slab
+Successors: Structural steel columns, Structural steel members
+--------------------------------------------------
+Task Name: Structural steel columns
+Object ID: 101721
+Planned Start: 2022-08-22T08:00:00
+Planned End: 2022-08-22T16:00:00
+Duration: 8 hours
+Predecessors: Pouring concrete for slab
+Successors: Framing, wood floor beam, Framing, floor joists, Wood framing, bridging, Sheathing, subfloor plywood
+--------------------------------------------------
+Task Name: Structural steel members
+Object ID: 101722
+Planned Start: 2022-08-22T08:00:00
+Planned End: 2022-08-22T16:00:00
+Duration: 8 hours
+Predecessors: Pouring concrete for slab
+Successors: Framing, wood floor beam
+--------------------------------------------------
+Task Name: Framing, wood floor beam
+Object ID: 101723
+Planned Start: 2022-08-23T08:00:00
+Planned End: 2022-08-23T16:00:00
+Duration: 8 hours
+Predecessors: Structural steel columns, Structural steel members
+Successors: Framing, floor joists
+--------------------------------------------------
+Task Name: Framing, floor joists
+Object ID: 101724
+Planned Start: 2022-08-24T08:00:00
+Planned End: 2022-08-29T16:00:00
+Duration: 32 hours
+Predecessors: Structural steel columns, Framing, wood floor beam
+Successors: Wood framing, bridging
+--------------------------------------------------
+Task Name: Wood framing, bridging
+Object ID: 101725
+Planned Start: 2022-08-30T08:00:00
+Planned End: 2022-08-31T16:00:00
+Duration: 16 hours
+Predecessors: Structural steel columns, Framing, floor joists
+Successors: Sheathing, subfloor plywood
+--------------------------------------------------
+Task Name: Sheathing, subfloor plywood
+Object ID: 101726
+Planned Start: 2022-09-01T08:00:00
+Planned End: 2022-09-02T16:00:00
+Duration: 16 hours
+Predecessors: Structural steel columns, Wood framing, bridging
+Successors: wall framing, columns
+--------------------------------------------------
+Task Name: wall framing, columns
+Object ID: 101727
+Planned Start: 2022-09-05T08:00:00
+Planned End: 2022-09-06T16:00:00
+Duration: 16 hours
+Predecessors: Sheathing, subfloor plywood
+Successors: Brick columns
+--------------------------------------------------
+Task Name: Brick columns
+Object ID: 101728
+Planned Start: 2022-09-07T08:00:00
+Planned End: 2022-09-13T16:00:00
+Duration: 40 hours
+Predecessors: wall framing, columns
+Successors: Wood framing studs, external walls, Wood framing, studs, interior walls
+--------------------------------------------------
+Task Name: Wood framing studs, external walls
+Object ID: 101729
+Planned Start: 2022-09-14T08:00:00
+Planned End: 2022-09-15T16:00:00
+Duration: 16 hours
+Predecessors: Brick columns
+Successors: Wood framing headers, external walls, Wood framing plates, external walls
+--------------------------------------------------
+Task Name: Wood framing headers, external walls
+Object ID: 101730
+Planned Start: 2022-09-16T08:00:00
+Planned End: 2022-09-16T16:00:00
+Duration: 8 hours
+Predecessors: Wood framing studs, external walls
+Successors: Sheathing, plywood for exterior walls, Wood framing plates, external walls
+--------------------------------------------------
+Task Name: Wood framing plates, external walls
+Object ID: 101731
+Planned Start: 2022-09-19T08:00:00
+Planned End: 2022-09-20T16:00:00
+Duration: 16 hours
+Predecessors: Wood framing headers, external walls, Wood framing studs, external walls
+Successors: Sheathing, plywood for exterior walls
+--------------------------------------------------
+Task Name: Wood framing, studs, interior walls
+Object ID: 101732
+Planned Start: 2022-09-14T08:00:00
+Planned End: 2022-09-15T16:00:00
+Duration: 16 hours
+Predecessors: Brick columns
+Successors: Wood framing headers, interior walls
+--------------------------------------------------
+Task Name: Wood framing headers, interior walls
+Object ID: 101733
+Planned Start: 2022-09-16T08:00:00
+Planned End: 2022-09-16T16:00:00
+Duration: 8 hours
+Predecessors: Wood framing, studs, interior walls
+Successors: Gypsum board, drywall for walls
+--------------------------------------------------
+Task Name: Sheathing, plywood for exterior walls
+Object ID: 101734
+Planned Start: 2022-09-21T08:00:00
+Planned End: 2022-09-22T15:12:00
+Duration: 15.2 hours
+Predecessors: Wood framing headers, external walls, Wood framing plates, external walls
+Successors: Prefabricated structural wood for wood trusses, Brick veneer
+--------------------------------------------------
+Task Name: Prefabricated structural wood for wood trusses
+Object ID: 101735
+Planned Start: 2022-09-22T15:12:00
+Planned End: 2022-09-26T13:02:00
+Duration: 13.8333333333333 hours
+Predecessors: Sheathing, plywood for exterior walls
+Successors: Shething, plywood pneumatic nailed for roof
+--------------------------------------------------
+Task Name: Shething, plywood pneumatic nailed for roof
+Object ID: 101736
+Planned Start: 2022-09-26T13:02:00
+Planned End: 2022-09-30T13:02:00
+Duration: 32 hours
+Predecessors: Prefabricated structural wood for wood trusses
+Successors: Place asphalt shingles, felt underlayment, HVAC
+--------------------------------------------------
+Task Name: Plumbing
+Object ID: 101737
+Planned Start: 2022-10-07T13:02:00
+Planned End: 2022-10-14T13:02:00
+Duration: 40 hours
+Predecessors: HVAC
+Successors: Electrical, Building Insulations in walls
+--------------------------------------------------
+Task Name: HVAC
+Object ID: 101738
+Planned Start: 2022-09-30T13:02:00
+Planned End: 2022-10-07T13:02:00
+Duration: 40 hours
+Predecessors: Shething, plywood pneumatic nailed for roof
+Successors: Building insulation above ceiling, Plumbing, Building Insulations in walls
+--------------------------------------------------
+Task Name: Electrical
+Object ID: 101739
+Planned Start: 2022-10-14T13:02:00
+Planned End: 2022-10-21T13:02:00
+Duration: 40 hours
+Predecessors: Plumbing
+Successors: Building Insulations in walls
+--------------------------------------------------
+Task Name: Building Insulations in walls
+Object ID: 101740
+Planned Start: 2022-10-21T13:02:00
+Planned End: 2022-10-26T08:43:00
+Duration: 19.6833333333333 hours
+Predecessors: Plumbing, HVAC, Electrical
+Successors: Gypsum board, drywall for walls
+--------------------------------------------------
+Task Name: Gypsum board, drywall for walls
+Object ID: 101741
+Planned Start: 2022-10-26T08:43:00
+Planned End: 2022-10-28T14:43:00
+Duration: 22 hours
+Predecessors: Wood framing headers, interior walls, Building Insulations in walls
+Successors: Manufactured fireplace, prefabricated, Install resilient flooring tiles, Install interior doors
+--------------------------------------------------
+Task Name: Finish Milestone
+Object ID: 101742
+Planned Start: 2022-12-13T13:50:00
+Planned End: 2022-12-13T13:50:00
+Duration: 0 hours
+Predecessors: Manufactured fireplace, prefabricated, Install downspouts, Stucco for exterior, Install carpet, Custom cabinets for kitchen, Custom cabinets for bathroom, Custom cabinets for laundry room, Bath accessories
+--------------------------------------------------
+Task Name: Brick veneer
+Object ID: 101743
+Planned Start: 2022-09-22T15:12:00
+Planned End: 2022-10-11T08:19:00
+Duration: 97.1166666666666 hours
+Predecessors: Sheathing, plywood for exterior walls
+Successors: Place parapet wall, Masonary anchor and reinforcement, wall ties
+--------------------------------------------------
+Task Name: Masonary anchor and reinforcement, wall ties
+Object ID: 101744
+Planned Start: 2022-10-11T08:19:00
+Planned End: 2022-10-14T08:19:00
+Duration: 24 hours
+Predecessors: Brick veneer
+Successors: Install exterior doors, Install windows
+--------------------------------------------------
+Task Name: Slab reinforcement (welded wire fabric)
+Object ID: 101745
+Planned Start: 2022-08-17T08:00:00
+Planned End: 2022-08-17T16:00:00
+Duration: 8 hours
+Predecessors: Form in place for slab on grade
+Successors: Pouring concrete for slab
+--------------------------------------------------
+Task Name: Install interior doors
+Object ID: 101746
+Planned Start: 2022-10-28T14:43:00
+Planned End: 2022-10-31T12:43:00
+Duration: 6 hours
+Predecessors: Gypsum board, drywall for walls
+Successors: Painting and coating walls and ceiling
+--------------------------------------------------
+Task Name: Install exterior doors
+Object ID: 101747
+Planned Start: 2022-10-14T08:19:00
+Planned End: 2022-10-14T16:00:00
+Duration: 7.68333333333333 hours
+Predecessors: Masonary anchor and reinforcement, wall ties
+Successors: Building insulation above ceiling
+--------------------------------------------------
+Task Name: Manufactured fireplace, prefabricated
+Object ID: 101748
+Planned Start: 2022-10-28T14:43:00
+Planned End: 2022-10-31T14:43:00
+Duration: 8 hours
+Predecessors: Gypsum board, drywall for walls
+Successors: Finish Milestone
+--------------------------------------------------
+Task Name: Building insulation above ceiling
+Object ID: 101749
+Planned Start: 2022-10-17T08:00:00
+Planned End: 2022-10-24T16:00:00
+Duration: 48 hours
+Predecessors: HVAC, Install exterior doors
+Successors: Sheathing, plywood for soffit, Gypsum board, drywall for ceiling
+--------------------------------------------------
+Task Name: Sheathing, plywood for soffit
+Object ID: 101750
+Planned Start: 2022-10-25T08:00:00
+Planned End: 2022-10-25T14:58:00
+Duration: 6.96666666666667 hours
+Predecessors: Building insulation above ceiling
+Successors: Place asphalt shingles, felt underlayment
+--------------------------------------------------
+Task Name: Place asphalt shingles, felt underlayment
+Object ID: 101751
+Planned Start: 2022-10-25T14:58:00
+Planned End: 2022-10-26T14:58:00
+Duration: 8 hours
+Predecessors: Shething, plywood pneumatic nailed for roof, Sheathing, plywood for soffit
+Successors: Place asphalt shingles for roof, Shingles, aluminum, end wall flashingand valley section
+--------------------------------------------------
+Task Name: Place asphalt shingles for roof
+Object ID: 101752
+Planned Start: 2022-10-26T14:58:00
+Planned End: 2022-11-11T11:46:00
+Duration: 92.8 hours
+Predecessors: Place asphalt shingles, felt underlayment
+Successors: Shingles, aluminum, end wall flashingand valley section
+--------------------------------------------------
+Task Name: Shingles, aluminum, end wall flashingand valley section
+Object ID: 101753
+Planned Start: 2022-11-11T11:46:00
+Planned End: 2022-11-15T11:46:00
+Duration: 16 hours
+Predecessors: Place asphalt shingles, felt underlayment, Place asphalt shingles for roof
+Successors: Install gutters
+--------------------------------------------------
+Task Name: Install gutters
+Object ID: 101754
+Planned Start: 2022-11-15T11:46:00
+Planned End: 2022-11-16T08:05:00
+Duration: 4.31666666666667 hours
+Predecessors: Shingles, aluminum, end wall flashingand valley section
+Successors: Install downspouts
+--------------------------------------------------
+Task Name: Install downspouts
+Object ID: 101755
+Planned Start: 2022-11-16T08:05:00
+Planned End: 2022-11-23T08:05:00
+Duration: 40 hours
+Predecessors: Install gutters
+Successors: Finish Milestone
+--------------------------------------------------
+Task Name: Install resilient flooring tiles
+Object ID: 101756
+Planned Start: 2022-10-28T14:43:00
+Planned End: 2022-10-31T14:43:00
+Duration: 8 hours
+Predecessors: Gypsum board, drywall for walls
+Successors: Plumbing fixtures for kitchen, bathroom and laundry room
+--------------------------------------------------
+Task Name: Stucco for exterior
+Object ID: 101757
+Planned Start: 2022-10-12T09:55:00
+Planned End: 2022-10-13T09:55:00
+Duration: 8 hours
+Predecessors: Place parapet wall
+Successors: Finish Milestone
+--------------------------------------------------
+Task Name: Gypsum board, drywall for ceiling
+Object ID: 101758
+Planned Start: 2022-10-25T08:00:00
+Planned End: 2022-10-26T10:00:00
+Duration: 10 hours
+Predecessors: Building insulation above ceiling
+Successors: Painting and coating walls and ceiling
+--------------------------------------------------
+Task Name: Install windows
+Object ID: 101759
+Planned Start: 2022-10-14T08:19:00
+Planned End: 2022-10-24T13:41:00
+Duration: 53.3666666666667 hours
+Predecessors: Masonary anchor and reinforcement, wall ties
+Successors: Painting and coating walls and ceiling
+--------------------------------------------------
+Task Name: Place parapet wall
+Object ID: 101760
+Planned Start: 2022-10-11T08:19:00
+Planned End: 2022-10-12T09:55:00
+Duration: 9.6 hours
+Predecessors: Brick veneer
+Successors: Stucco for exterior
+--------------------------------------------------
+Task Name: Painting and coating walls and ceiling
+Object ID: 101761
+Planned Start: 2022-10-31T12:43:00
+Planned End: 2022-11-10T09:26:00
+Duration: 60.7166666666667 hours
+Predecessors: Install interior doors, Gypsum board, drywall for ceiling, Install windows
+Successors: Install carpet, Install ceramic tiles
+--------------------------------------------------
+Task Name: Install carpet
+Object ID: 101762
+Planned Start: 2022-11-10T09:26:00
+Planned End: 2022-11-14T10:00:00
+Duration: 16.5666666666667 hours
+Predecessors: Painting and coating walls and ceiling
+Successors: Finish Milestone
+--------------------------------------------------
+Task Name: Install ceramic tiles
+Object ID: 101763
+Planned Start: 2022-11-10T09:26:00
+Planned End: 2022-11-29T13:50:00
+Duration: 108.4 hours
+Predecessors: Painting and coating walls and ceiling
+Successors: Plumbing fixtures for kitchen, bathroom and laundry room
+--------------------------------------------------
+Task Name: Custom cabinets for kitchen
+Object ID: 101764
+Planned Start: 2022-12-06T13:50:00
+Planned End: 2022-12-13T13:50:00
+Duration: 40 hours
+Predecessors: Plumbing fixtures for kitchen, bathroom and laundry room
+Successors: Finish Milestone
+--------------------------------------------------
+Task Name: Custom cabinets for bathroom
+Object ID: 101765
+Planned Start: 2022-12-06T13:50:00
+Planned End: 2022-12-13T13:50:00
+Duration: 40 hours
+Predecessors: Plumbing fixtures for kitchen, bathroom and laundry room
+Successors: Finish Milestone
+--------------------------------------------------
+Task Name: Custom cabinets for laundry room
+Object ID: 101766
+Planned Start: 2022-12-06T13:50:00
+Planned End: 2022-12-13T13:50:00
+Duration: 40 hours
+Predecessors: Plumbing fixtures for kitchen, bathroom and laundry room
+Successors: Finish Milestone
+--------------------------------------------------
+Task Name: Plumbing fixtures for kitchen, bathroom and laundry room
+Object ID: 101767
+Planned Start: 2022-11-29T13:50:00
+Planned End: 2022-12-06T13:50:00
+Duration: 40 hours
+Predecessors: Install ceramic tiles, Install resilient flooring tiles
+Successors: Bath accessories, Custom cabinets for kitchen, Custom cabinets for bathroom, Custom cabinets for laundry room
+--------------------------------------------------
+Task Name: Bath accessories
+Object ID: 101768
+Planned Start: 2022-12-06T13:50:00
+Planned End: 2022-12-13T13:50:00
+Duration: 40 hours
+Predecessors: Plumbing fixtures for kitchen, bathroom and laundry room
+Successors: Finish Milestone
+--------------------------------------------------
+Task Name: Excavation
+Object ID: 101769
+Planned Start: 2022-08-01T08:00:00
+Planned End: 2022-08-03T16:00:00
+Duration: 24 hours
+Successors: Forms in place for footing
+--------------------------------------------------
+Task Name: Forms in place for footing
+Object ID: 101770
+Planned Start: 2022-08-04T08:00:00
+Planned End: 2022-08-09T16:00:00
+Duration: 32 hours
+Predecessors: Excavation
+Successors: Install vent box for foundation, Reinforcing in place for footing
+--------------------------------------------------
+Task Name: Install vent box for foundation
+Object ID: 101771
+Planned Start: 2022-08-10T08:00:00
+Planned End: 2022-08-10T16:00:00
+Duration: 8 hours
+Predecessors: Forms in place for footing
+Successors: Pouring concrete for footings
+--------------------------------------------------
+Task Name: Reinforcing in place for footing
+Object ID: 101772
+Planned Start: 2022-08-10T08:00:00
+Planned End: 2022-08-10T16:00:00
+Duration: 8 hours
+Predecessors: Forms in place for footing
+Successors: Pouring concrete for footings
+--------------------------------------------------
+Task Name: Pouring concrete for footings
+Object ID: 101773
+Planned Start: 2022-08-11T08:00:00
+Planned End: 2022-08-12T16:00:00
+Duration: 16 hours
+Predecessors: Install vent box for foundation, Reinforcing in place for footing
+Successors: Backfill
+--------------------------------------------------
