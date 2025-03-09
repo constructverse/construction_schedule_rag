@@ -1,0 +1,20 @@
+identity:
+  author: "dou"
+  name: "parser"
+  label:
+    en_US: "Activities Tools"
+  description:
+    en_US: "Provides four tools for processing and visualizing activities from an XML file."
+  icon: icon.svg
+  tags:
+    - utilities
+
+tools:
+  - tools/convert_xml_to_json.yaml
+  - tools/filter_activities_by_date.yaml
+  - tools/visualize_activities.yaml
+  - tools/build_graph.yaml
+
+extra:
+  python:
+    source: parser.py

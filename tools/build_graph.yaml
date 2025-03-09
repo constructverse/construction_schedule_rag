@@ -1,0 +1,22 @@
+identity:
+  name: build_graph
+  author: "Dou"
+  label:
+    en_US: "Build Graph"
+
+description:
+  human:
+    en_US: "Builds a directed graph of tasks from the specified JSON data."
+  llm: "Given a JSON file, construct or visualize a graph (like a network of tasks)."
+
+parameters:
+  - name: json_file
+    type: string
+    required: true
+    label:
+      en_US: "Filtered JSON File"
+    llm_description: "Path to the JSON file containing tasks to graph"
+
+extra:
+  python:
+    source: tools/build_graph.py

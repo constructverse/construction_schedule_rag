@@ -1,0 +1,29 @@
+identity:
+  name: visualize_activities
+  author: "Yuna"
+  label:
+    en_US: "Visualize Activities"
+
+description:
+  human:
+    en_US: "Creates a chart from a filtered JSON file of activities."
+  llm: "Given a filtered JSON file of activities, generate a bar chart or Gantt-like chart."
+
+parameters:
+  - name: json_file
+    type: string
+    required: true
+    label:
+      en_US: "Filtered JSON File"
+    llm_description: "Path to the JSON file created by 'filter_activities_by_date'"
+
+  - name: date
+    type: string
+    required: false
+    label:
+      en_US: "Label Date"
+    llm_description: "Optional label for the chart title or highlight line"
+
+extra:
+  python:
+    source: tools/visualize_activities.py

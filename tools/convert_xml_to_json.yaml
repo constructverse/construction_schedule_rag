@@ -1,0 +1,29 @@
+identity:
+  name: convert_xml_to_json
+  author: "Yuna"
+  label:
+    en_US: "Convert XML to JSON"
+
+description:
+  human:
+    en_US: "Converts an XML file into JSON format using your custom logic."
+  llm: "Given an XML file path and an output JSON file path, convert the data."
+
+parameters:
+  - name: xml_file
+    type: string
+    required: true
+    label:
+      en_US: "Input XML File"
+    llm_description: "Path to the source XML file"
+
+  - name: json_file
+    type: string
+    required: true
+    label:
+      en_US: "Output JSON File"
+    llm_description: "Path to save the resulting JSON file"
+
+extra:
+  python:
+    source: tools/convert_xml_to_json.py

@@ -1,0 +1,36 @@
+identity:
+  name: filter_activities_by_date
+  author: "Yuna"
+  label:
+    en_US: "Filter Activities by Date"
+
+description:
+  human:
+    en_US: "Filters the JSON output by a specific date (MM/DD/YYYY)."
+  llm: "Given a JSON file of activities, return only those covering the chosen date."
+
+parameters:
+  - name: json_file
+    type: string
+    required: true
+    label:
+      en_US: "Input JSON File"
+    llm_description: "Path to the JSON file (output from 'convert_xml_to_json')"
+
+  - name: target_date
+    type: string
+    required: true
+    label:
+      en_US: "Date (MM/DD/YYYY)"
+    llm_description: "Selects only activities that include this date in their schedule"
+
+  - name: output_file
+    type: string
+    required: true
+    label:
+      en_US: "Filtered JSON Output"
+    llm_description: "Where to save the filtered subset"
+
+extra:
+  python:
+    source: tools/filter_activities_by_date.py
