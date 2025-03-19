@@ -8,6 +8,12 @@ PINECONE_API_KEY = "pcsk_49xJ6R_79kmGWc75R6NUBvPQssUoEiDMRrmjJb3zNDdSsodUgiRM71Q
 INDEX_NAME = "activities-index"
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+MONGO_URI = os.getenv("MONGO_URI", "your-mongodb-uri")
+MONGO_DB_NAME = "your_database_name"
+MONGO_COLLECTION_NAME = "activities"
+mongo_client = pymongo.MongoClient(MONGO_URI)
+db = mongo_client[MONGO_DB_NAME]
+collection = db[MONGO_COLLECTION_NAME]
 
 def initialize_pinecone():
     pc = Pinecone(api_key=PINECONE_API_KEY, host="https://activities-index-ku54fn2.svc.aped-4627-b74a.pinecone.io")
