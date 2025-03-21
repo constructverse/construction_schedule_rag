@@ -8,7 +8,7 @@ from pdb import set_trace as bp
 import certifi
 
 # --- Configuration ---
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "put_your_openai_api_key_here")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "your_openai_api_key")
 PINECONE_API_KEY = "pcsk_49xJ6R_79kmGWc75R6NUBvPQssUoEiDMRrmjJb3zNDdSsodUgiRM71Q6pnq9NFog5Cnr3X"
 INDEX_NAME = "activities-index"
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -146,12 +146,12 @@ def extract_progress(report, activity_name):
 
 
 def update_progress(object_id, new_progress):
-    # Update Progress in MongoDB @Shun need to check it
 
     update_result = collection.update_one(
         {"task_id": object_id},
         {"$set": {"percentage_complete": new_progress}}
     )
+
     return update_result.modified_count > 0
 
 
