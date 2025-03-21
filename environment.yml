@@ -257,4 +257,6 @@ dependencies:
       - yarl==1.18.3
       - zipp==3.21.0
       - scipy
+      - pymongo
+      - pinecone
 prefix: /opt/miniconda3/envs/con_sched_rag

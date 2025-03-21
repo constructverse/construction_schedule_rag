@@ -1,23 +1,46 @@
 import os
+import json
+# from openai import openAI as OpenAI
 from openai import OpenAI
-from pinecone import Pinecone
+from pinecone import Pinecone, ServerlessSpec
+import pymongo
+from pdb import set_trace as bp
+import certifi
 
 # --- Configuration ---
-OPENAI_API_KEY = "Your API"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "put_your_openai_api_key_here")
 PINECONE_API_KEY = "pcsk_49xJ6R_79kmGWc75R6NUBvPQssUoEiDMRrmjJb3zNDdSsodUgiRM71Q6pnq9NFog5Cnr3X"
 INDEX_NAME = "activities-index"
 client = OpenAI(api_key=OPENAI_API_KEY)
+OpenAI.api_key = OPENAI_API_KEY
 
-MONGO_URI = os.getenv("MONGO_URI", "your-mongodb-uri")
-MONGO_DB_NAME = "your_database_name"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://junryuf2:Sbdggw9gk6iCDKa4@dialog.yctqm.mongodb.net/?retryWrites=true&w=majority&appName=Dialog")
+MONGO_DB_NAME = "test"
 MONGO_COLLECTION_NAME = "activities"
+
 mongo_client = pymongo.MongoClient(MONGO_URI)
 db = mongo_client[MONGO_DB_NAME]
 collection = db[MONGO_COLLECTION_NAME]
 
 def initialize_pinecone():
-    pc = Pinecone(api_key=PINECONE_API_KEY, host="https://activities-index-ku54fn2.svc.aped-4627-b74a.pinecone.io")
-    return pc.Index(INDEX_NAME)
+    # from pdb import set_trace
+    # set_trace()
+    # pinecone.init(
+    # pc = Pinecone(api_key=PINECONE_API_KEY, host="https://activities-index-ku54fn2.svc.aped-4627-b74a.pinecone.io")
+    pc = Pinecone(api_key=PINECONE_API_KEY,  environment="us-west-2-aws")
+    if "activities-index" not in pc.list_indexes().names():
+        pc.create_index(
+            name="activities-index",
+            dimension=1536,
+            metric="cosine",
+            spec=ServerlessSpec(
+                cloud="aws", 
+                region="us-west-2"  
+            )
+        )
+    index = pc.Index("activities-index")
+
+    return index
 
 
 def get_embedding(text):
@@ -37,6 +60,7 @@ def query_pinecone(index, query_text, namespace, top_k=10):
     Queries the Pinecone index using the embedding of the provided query text.
     Returns the raw query response, including the matched vectors.
     """
+    # i'm pouring concrete 7 out of 10 parts
     query_embedding = get_embedding(query_text)
     query_response = index.query(
         vector=query_embedding,
@@ -123,9 +147,10 @@ def extract_progress(report, activity_name):
 
 def update_progress(object_id, new_progress):
     # Update Progress in MongoDB @Shun need to check it
+
     update_result = collection.update_one(
-        {"ObjectId": object_id},
-        {"$set": {"Percentage_complete": new_progress}}
+        {"task_id": object_id},
+        {"$set": {"percentage_complete": new_progress}}
     )
     return update_result.modified_count > 0
 
@@ -191,7 +216,7 @@ def assign_progress_to_activities(selected_matches, user_report):
 
 
 def main():
-    file_name = "project1.json"
+    file_name = "/u/dkwark/projects/construction_schedule_rag/src/output.json"
     project_name = os.path.splitext(os.path.basename(file_name))[0]
     print(f"Extracted project name: {project_name}")
     index = initialize_pinecone()

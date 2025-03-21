@@ -1,10 +1,10 @@
 import os
 import json
 from openai import OpenAI
-from pinecone import Pinecone
+from pinecone import Pinecone, ServerlessSpec
 
 # Set your API keys here
-OPENAI_API_KEY = "your API"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "put_your_openai_api_key_here")
 PINECONE_API_KEY = "pcsk_49xJ6R_79kmGWc75R6NUBvPQssUoEiDMRrmjJb3zNDdSsodUgiRM71Q6pnq9NFog5Cnr3X"
 INDEX_NAME = "activities-index"
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -36,13 +36,33 @@ def load_activities(file_path):
             activities.append(value)
     return activities
 
+# def initialize_pinecone():
+#     """
+#     Initializes Pinecone and ensures that the desired index exists.
+#     The dimension for text-embedding-3-small is 1536.
+#     """
+#     pc = Pinecone(api_key=PINECONE_API_KEY, host="https://activities-index-ku54fn2.svc.aped-4627-b74a.pinecone.io")
+#     return pc.Index(INDEX_NAME)
+
 def initialize_pinecone():
-    """
-    Initializes Pinecone and ensures that the desired index exists.
-    The dimension for text-embedding-3-small is 1536.
-    """
-    pc = Pinecone(api_key=PINECONE_API_KEY, host="https://activities-index-ku54fn2.svc.aped-4627-b74a.pinecone.io")
-    return pc.Index(INDEX_NAME)
+    # from pdb import set_trace
+    # set_trace()
+    # pinecone.init(
+    # pc = Pinecone(api_key=PINECONE_API_KEY, host="https://activities-index-ku54fn2.svc.aped-4627-b74a.pinecone.io")
+    pc = Pinecone(api_key=PINECONE_API_KEY,  environment="us-west-2-aws")
+    if "activities-index" not in pc.list_indexes().names():
+        pc.create_index(
+            name="activities-index",
+            dimension=1536,
+            metric="cosine",
+            spec=ServerlessSpec(
+                cloud="aws",  # or "gcp"
+                region="us-west-2"  # or your region
+            )
+        )
+    index = pc.Index("activities-index")
+
+    return index
 
 
 def sanitize_metadata(metadata):
@@ -100,7 +120,7 @@ def upsert_activities(index, activities, namespace):
 
 
 def main():
-    file_name = "projectX.json"
+    file_name = "/u/dkwark/projects/construction_schedule_rag/src/output.json"
     project_name = os.path.splitext(os.path.basename(file_name))[0]
     print(f"Project name: {project_name}")
     activities = load_activities(file_name)
