@@ -1,32 +1,40 @@
 # file: src/endpoints/chat.py
 
-from fastapi import FastAPI, Body
+from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
 import os
 import json
 import pymongo
 from typing import Optional, List, Dict
+import uuid
+from datetime import datetime
+from openai import OpenAI
 
-# ------------------ Existing Logic Imports ------------------ 
-# Adjust these imports to point to where your existing functions live.
-# For example, if they're in src/llm/rag.py, do:
-# from src.llm.rag import (
-#     initialize_pinecone, query_pinecone, get_schedule_activity_summary,
-#     extract_progress, update_progress
-# )
-
+# ------------------ Existing Logic Imports ------------------
 import sys
 sys.path.append('.')
 from src.LLM.RAG import (
-    initialize_pinecone, query_pinecone, get_schedule_activity_summary,
-    extract_progress, update_progress
+    initialize_pinecone,
+    query_pinecone,
+    get_schedule_activity_summary,
+    extract_progress,
+    update_progress
 )
 
 # ------------------ FastAPI Setup ------------------
 app = FastAPI()
 
+# ------------------ Mongo Setup (Add a new 'conversations' collection) ------------------
+MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://junryuf2:Sbdggw9gk6iCDKa4@dialog.yctqm.mongodb.net/?retryWrites=true&w=majority&appName=Dialog")
+mongo_client = pymongo.MongoClient(MONGO_URI)
+db = mongo_client["test"]  # or your preferred DB name
+collection_conversations = db["conversations"]  # new collection for chat conversations
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "your_openai_api_key")
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+# ------------------ Existing Endpoints for Activities ------------------
 
 class GetActivitiesRequest(BaseModel):
     project_name: str
@@ -35,19 +43,10 @@ class GetActivitiesRequest(BaseModel):
 
 class GetActivitiesResponse(BaseModel):
     summary: str
-    matched_activities: List[Dict]  # Each element: { "id", "name", "detected_progress": ..., ...}
-
-
-# ------------------ Endpoint 1: Retrieve Matches & Detected Progress ------------------
+    matched_activities: List[Dict]
 
 @app.post("/api/chat/get_activities", response_model=GetActivitiesResponse)
 def get_activities(body: GetActivitiesRequest):
-    """
-    This endpoint takes the user's report and returns the most relevant schedule activities.
-    We also attempt to auto-detect progress for each activity (if possible).
-    The client (front-end) can then choose which ones to update.
-    """
-    # 1) Initialize and Query Pinecone
     index = initialize_pinecone()
     results = query_pinecone(
         index=index,
@@ -57,17 +56,14 @@ def get_activities(body: GetActivitiesRequest):
     )
     matches = results.get("matches", [])
 
-    # 2) Summarize matches
     summary_text = get_schedule_activity_summary(body.user_report, matches)
 
-    # 3) Build response data
     matched_activities_data = []
     for match in matches:
         metadata = match.get("metadata", {})
         activity_name = metadata.get("name", "N/A")
         object_id = metadata.get("ObjectId", None)
 
-        # Attempt to auto-detect progress (could be None)
         detected_progress = extract_progress(body.user_report, activity_name)
 
         matched_activities_data.append({
@@ -82,45 +78,14 @@ def get_activities(body: GetActivitiesRequest):
         "matched_activities": matched_activities_data
     }
 
-
-# ------------------ Endpoint 2: Update Activities ------------------
-
 class UpdateActivitiesRequest(BaseModel):
     updates: List[Dict]
-    """
-    Example of 'updates':
-      [
-        {
-          "object_id": "abc123",
-          "name": "Pouring Concrete",
-          "progress": 60.0
-        },
-        {
-          "object_id": "xyz789",
-          "name": "Digging Foundation",
-          "progress": 25.0
-        }
-      ]
-    """
 
 class UpdateActivitiesResponse(BaseModel):
     updated_activities: List[Dict]
-    """
-    Each element in 'updated_activities':
-      {
-        "object_id": ...,
-        "success": True/False,
-        "reason": ...,
-      }
-    """
-
 
 @app.post("/api/chat/update_activities", response_model=UpdateActivitiesResponse)
 def update_activities(body: UpdateActivitiesRequest):
-    """
-    This endpoint receives a list of activities to update, with the user’s chosen
-    progress values. We then attempt to update each in the database.
-    """
     updated_activities_info = []
     for item in body.updates:
         object_id = item.get("object_id")
@@ -137,11 +102,89 @@ def update_activities(body: UpdateActivitiesRequest):
         updated_activities_info.append({
             "object_id": object_id,
             "success": success,
-            "reason": "nothing changed" if not success else "updated"
+            "reason": "updated" if success else "nothing changed"
         })
 
     return {
         "updated_activities": updated_activities_info
+    }
+
+# ------------------ New Chat Conversation Endpoint ------------------
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatConversationRequest(BaseModel):
+    session_id: Optional[str] = None  # Make sure to default to None
+    user_message: str
+
+class ChatConversationResponse(BaseModel):
+    session_id: str
+    messages: str  # List[ChatMessage]
+
+@app.post("/api/chat/conversation", response_model=ChatConversationResponse)
+def conversation(body: ChatConversationRequest):
+    """
+    Maintains a conversation with an AI model, storing chat history in MongoDB.
+    """
+
+    # 1) Create/find conversation
+    if body.session_id:
+        convo_doc = collection_conversations.find_one({"session_id": body.session_id})
+        if convo_doc is None:
+            # If session_id is provided but not found, we treat it as new
+            session_id = body.session_id
+            convo_doc = {
+                "session_id": session_id,
+                "messages": [
+                    {"role": "system", "content": "You are a helpful construction assistant."}
+                ],
+                "last_updated": datetime.utcnow()
+            }
+            collection_conversations.insert_one(convo_doc)
+        else:
+            session_id = body.session_id
+    else:
+        # session_id was not provided -> create a new one
+        session_id = str(uuid.uuid4())
+        convo_doc = {
+            "session_id": session_id,
+            "messages": [
+                {"role": "system", "content": "You are a helpful construction assistant."}
+            ],
+            "last_updated": datetime.utcnow()
+        }
+        collection_conversations.insert_one(convo_doc)
+
+    # 2) Append user's message
+    messages = convo_doc["messages"]
+    messages.append({"role": "user", "content": body.user_message})
+
+    # 3) Call OpenAI
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0.7,
+        max_tokens=512
+    )
+    assistant_content = response.choices[0].message.content
+
+    # 4) Append assistant message & update DB
+    messages.append({"role": "assistant", "content": assistant_content})
+    collection_conversations.update_one(
+        {"session_id": session_id},
+        {
+            "$set": {
+                "messages": messages,
+                "last_updated": datetime.utcnow()
+            }
+        }
+    )
+
+    # 5) return the response
+    return {
+        "session_id": session_id,
+        "messages": assistant_content
     }
 
 
