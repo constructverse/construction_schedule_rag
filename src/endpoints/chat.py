@@ -78,31 +78,53 @@ def get_activities(body: GetActivitiesRequest):
         "matched_activities": matched_activities_data
     }
 
+
+
+# ------------------ Update Activities ------------------    
+
 class UpdateActivitiesRequest(BaseModel):
-    updates: List[Dict]
+    updates: List[Dict]  # each Dict should have {object_id, name, progress}
 
 class UpdateActivitiesResponse(BaseModel):
     updated_activities: List[Dict]
 
 @app.post("/api/chat/update_activities", response_model=UpdateActivitiesResponse)
 def update_activities(body: UpdateActivitiesRequest):
+    """
+    For each requested update, we use extract_progress to interpret
+    the textual progress in 'progress'. Then update the DB accordingly.
+    """
     updated_activities_info = []
     for item in body.updates:
         object_id = item.get("object_id")
-        progress_val = item.get("progress")
-        if not object_id or progress_val is None:
+        activity_name = item.get("name", "")
+        # The user might pass "progress" as a free-text description (e.g. "80%", "almost done", etc.)
+        progress_text = str(item.get("progress", ""))
+
+        if not object_id:
             updated_activities_info.append({
-                "object_id": object_id,
+                "object_id": None,
                 "success": False,
-                "reason": "missing object_id or progress"
+                "reason": "missing object_id"
             })
             continue
 
-        success = update_progress(object_id, progress_val)
+        # Use the GPT-based function to interpret the numeric progress
+        interpreted_progress = extract_progress(progress_text, activity_name)
+        if interpreted_progress is None:
+            updated_activities_info.append({
+                "object_id": object_id,
+                "success": False,
+                "reason": f"Could not parse numeric progress from '{progress_text}'"
+            })
+            continue
+
+        # Update the DB
+        success = update_progress(object_id, interpreted_progress)
         updated_activities_info.append({
             "object_id": object_id,
             "success": success,
-            "reason": "updated" if success else "nothing changed"
+            "reason": "updated" if success else "no change"
         })
 
     return {

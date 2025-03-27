@@ -36,10 +36,29 @@
 #      }'
 
 
+# curl -X POST \
+#      http://localhost:8000/api/chat/conversation \
+#      -H "Content-Type: application/json" \
+#      -d '{
+#          "session_id": "7b6c6265-f74a-477f-b1d4-288b5c6c1cf2",
+#          "user_message": "What are the steps to pouring concrete safely?"
+#      }'
+
+
 curl -X POST \
-     http://localhost:8000/api/chat/conversation \
+     http://localhost:8000/api/chat/update_activities \
      -H "Content-Type: application/json" \
      -d '{
-         "session_id": "7b6c6265-f74a-477f-b1d4-288b5c6c1cf2",
-         "user_message": "What are the steps to pouring concrete safely?"
+         "updates": [
+             {
+                 "object_id": "102564",
+                 "name": "Bid Package 3 - Building Concrete Package",
+                 "progress": "90% done"
+             },
+             {
+                 "object_id": "102491",
+                 "name": "Demo Bituminous/Concrete Paving - Site Area 4",
+                 "progress": "nearly started"
+             }
+         ]
      }'
