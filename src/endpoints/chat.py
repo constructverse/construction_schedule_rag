@@ -28,6 +28,7 @@ app = FastAPI()
 # ------------------ Mongo Setup (Add a new 'conversations' collection) ------------------
 MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://junryuf2:Sbdggw9gk6iCDKa4@dialog.yctqm.mongodb.net/?retryWrites=true&w=majority&appName=Dialog")
 mongo_client = pymongo.MongoClient(MONGO_URI)
+
 db = mongo_client["test"]  # or your preferred DB name
 collection_conversations = db["conversations"]  # new collection for chat conversations
 
@@ -227,7 +228,7 @@ def answer_specific_question(user_msg: str, project_name: str = "output") -> str
         "specific to the project. We have some retrieved context from a schedule:\n\n"
         f"{context_str}\n"
         f"User question: {user_msg}\n\n"
-        "Please answer accurately based on the context. If not enough info, say so."
+        "Please answer accurately based on the context."
     )
 
     response = client.chat.completions.create(
@@ -280,8 +281,10 @@ def conversation(body: ChatConversationRequest):
         else:
             session_id = body.session_id
     else:
+        print("Creating new conversation document since no session_id was provided.")
         # No session_id -> create new
         session_id = str(uuid.uuid4())
+        print(f"Generated new session_id: {session_id}")
         convo_doc = {
             "session_id": session_id,
             "messages": [
@@ -289,7 +292,9 @@ def conversation(body: ChatConversationRequest):
             ],
             "last_updated": datetime.utcnow()
         }
+        print(f"New conversation document created with session_id: {session_id}")
         collection_conversations.insert_one(convo_doc)
+        
 
     # 2) Append user's message
     messages = convo_doc["messages"]
@@ -297,6 +302,8 @@ def conversation(body: ChatConversationRequest):
 
     # 3) Classify user question
     classification = classify_query(body.user_message)  # "general" or "specific"
+
+    print(f"Classified user message: '{body.user_message}' as '{classification}'")
 
     # 4) Generate final answer
     if classification == "general":

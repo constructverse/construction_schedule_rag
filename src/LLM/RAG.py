@@ -11,6 +11,7 @@ import certifi
 
 # --- Configuration ---
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "your_openai_api_key")
+
 PINECONE_API_KEY = "pcsk_49xJ6R_79kmGWc75R6NUBvPQssUoEiDMRrmjJb3zNDdSsodUgiRM71Q6pnq9NFog5Cnr3X"
 INDEX_NAME = "activities-index"
 client = OpenAI(api_key=OPENAI_API_KEY)
