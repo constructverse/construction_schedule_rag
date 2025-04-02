@@ -90,12 +90,34 @@ def get_schedule_activity_summary(user_report, matches):
             context += f"  {key}: {value}\n"
         context += "\n"
 
-    prompt = (
-        f"User Report: {user_report}\n\n"
-        f"Based on the following schedule activity details:\n\n{context}\n\n"
-        "Evaluate each activity and decide whether it is fully relevant, partially relevant, or not relevant to the user's report. "
-        "Then provide a concise final summary that highlights the key details and progress of the most relevant activities."
-    )
+    prompt = f"""
+        You are an assistant that analyzes user reports and matches them to schedule activities. 
+        You have the following user report:
+
+        \"\"\" 
+        {user_report} 
+        \"\"\"
+
+        Below are several schedule activities, each with an ID, name, and additional metadata:
+
+        \"\"\" 
+        {context}
+        \"\"\"
+
+        1. For each activity, determine:
+        - How relevant the activity is to the user report (fully relevant, partially relevant, or not relevant).
+        - Why you made that assessment.
+
+        2. Once you have made the assessments, create a final summary. 
+        - In the summary, highlight the key details from the user report that connect with the most relevant activities.
+        - If possible, mention any progress or updates you infer from the user report.
+
+        Please structure your final answer in two parts:
+        (A) Activity Relevance Evaluations
+        (B) Concise Overall Summary
+
+        Be clear, direct, and avoid extraneous commentary.
+    """
 
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -122,11 +144,33 @@ def extract_progress(report, activity_name):
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": (
-                    "You are an assistant that extracts a certain activitiy's quantitative progress information from user reports. "
-                    "When given a report and a certain activity, if it includes a quantitative progress status (like a percentage or number) on a certain activity, "
-                    "output only a progress key with the numeric value (0 - 100) as a float in json format: {'progress': float}."
-                    "If the input is vague (e.g., 'almost done' or 'halfway'), convert it to a rough percentage value (0 - 100) in json format: {'progress': float}."
-                    "If it is unsure or does not contain any quantitative progress, output {'progress': None}."
+                    f"""
+                    You are an assistant designed to extract numeric progress information for a specific activity 
+                    from a user's report. You will receive two pieces of text: 
+                    (1) The activity name 
+                    (2) The user’s report describing possible progress.
+
+                    Your job:
+                    - Look for any mention of progress that can be interpreted as a number between 0 and 100.
+                    - If it’s explicitly given (like “80% done” or “progress is 20”), extract that number.
+                    - If it’s vague (like “almost done,” “halfway,” “a quarter done”), interpret it as a rough numeric percentage:
+                    - “almost done” -> around 90%
+                    - “halfway” -> 50
+                    - “a quarter done” -> 25
+                    (Use your best judgment if the text is ambiguous.)
+                    - If there is no mention of progress at all, or it’s impossible to convert to a percentage, return 50.
+
+                    Your output must be valid JSON in one line, with a single key 'progress', like:
+                    {{"progress": 60.0}}
+                    if the progress is 60%, or
+                    {{"progress": 50.0}}
+                    if you cannot extract or infer progress.
+
+                    Follow these rules strictly:
+                    1. Always output valid JSON.
+                    2. Do not include other keys or text.
+                    3. Make sure 'progress' is either a float (0.0 - 100.0) or null.
+                    """
                 )},
                 {"role": "user", "content": f"Activity: {activity_name} \n Report: {report}"}
             ],

@@ -170,10 +170,24 @@ def classify_query(user_msg: str) -> str:
     Return 'general' or 'specific'.
     """
     classification_prompt = (
-        "You are a classifier. Given a user question, decide if it is "
-        "general knowledge or specific to project construction activities.\n"
-        "Return only the single word 'general' or 'specific'.\n"
-        f"Question: {user_msg}"
+        f"""
+        You are a classifier. You will receive a user question. 
+        Your task: 
+        - Decide if this question is about general knowledge or is specifically about project construction or schedule-related topics.
+
+        If it is unrelated to the construction project or is general knowledge, output the single word:
+        general
+
+        If it directly concerns the construction project’s details, schedule, tasks, or progress, output the single word:
+        specific
+
+        Output nothing else—only one of these two words: 'general' or 'specific'.
+
+        Here is the user question:
+        \"\"\"
+        {user_msg}
+        \"\"\"
+        """
     )
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -196,45 +210,64 @@ def answer_general_question(messages: List[Dict]) -> str:
     If the user question is 'general', we feed the conversation so far
     directly into GPT (gpt-4, for example) for an answer.
     """
+    system_message = {
+        "role": "system",
+        "content": (
+            "You are a large language model assisting with general knowledge questions. "
+            "Provide clear, concise answers. If the user asks something unclear, request clarification. "
+            "Cite reputable sources if needed, but do not fabricate references."
+        )
+    }
+    # Now build the chat request:
+    full_messages = [system_message] + messages
+    
     response = client.chat.completions.create(
-        model="gpt-4o",  # or "gpt-3.5-turbo"
-        messages=messages,
+        model="gpt-4o",
+        messages=full_messages,
         temperature=0.7,
         max_tokens=512
     )
+
     return response.choices[0].message.content
 
 
 def answer_specific_question(user_msg: str, project_name: str = "output") -> str:
-    """
-    If the user question is 'specific', we do a retrieval from Pinecone (RAG)
-    and then have GPT generate the final answer from the context.
-    """
-    # 1) Retrieve relevant info from Pinecone
     index = initialize_pinecone()
     results = query_pinecone(index, user_msg, namespace=project_name, top_k=5)
     matches = results.get("matches", [])
 
-    # 2) Build the context string for GPT
+    # Build a textual context from matches
     context_str = ""
     for i, match in enumerate(matches, start=1):
         meta = match.get("metadata", {})
         context_str += f"Activity {i}: {meta.get('name', 'Unknown')}\n"
-        # You can add more metadata if needed
 
-    # 3) Compose prompt for GPT
-    rag_prompt = (
-        "You are a helpful construction assistant. The user asked a question "
-        "specific to the project. We have some retrieved context from a schedule:\n\n"
-        f"{context_str}\n"
-        f"User question: {user_msg}\n\n"
-        "Please answer accurately based on the context."
-    )
+    # Improved RAG prompt
+    rag_prompt = f"""
+    You are an assistant specializing in construction project details. 
+    The user has asked a question specifically about this construction project.
+
+    Below are pieces of context from the schedule database that might help:
+    \"\"\"
+    {context_str}
+    \"\"\"
+
+    The user’s question is:
+    \"\"\"
+    {user_msg}
+    \"\"\"
+
+    Guidelines:
+    1. Use only the context above if relevant.
+    2. If you cannot find the answer, state that you are unsure or that the info is missing.
+    3. Do not invent details beyond what is provided.
+    4. Provide a clear, direct answer that addresses the question.
+    """
 
     response = client.chat.completions.create(
-        model="gpt-4o",  # or "gpt-3.5-turbo"
+        model="gpt-4o",
         messages=[
-            {"role": "system", "content": "Provide a project-specific answer from the context."},
+            {"role": "system", "content": "Provide a project-specific answer from the given context."},
             {"role": "user", "content": rag_prompt}
         ],
         temperature=0.7,
@@ -273,7 +306,20 @@ def conversation(body: ChatConversationRequest):
             convo_doc = {
                 "session_id": session_id,
                 "messages": [
-                    {"role": "system", "content": "You are a helpful construction assistant."}
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a helpful construction assistant. "
+                            "Guidelines:\n"
+                            "1) When the user’s question is classified as 'general', simply answer "
+                            "   it using your broad knowledge. If uncertain, ask for clarification.\n"
+                            "2) When the user’s question is classified as 'specific' to the project, "
+                            "   rely on the project schedule data or context if available. "
+                            "   Only use the data you have; if unsure, say so.\n"
+                            "3) Be precise, concise, and avoid hallucinating details. If you lack info, "
+                            "   let the user know or ask for more details.\n"
+                        )
+                    }
                 ],
                 "last_updated": datetime.utcnow()
             }
@@ -288,28 +334,41 @@ def conversation(body: ChatConversationRequest):
         convo_doc = {
             "session_id": session_id,
             "messages": [
-                {"role": "system", "content": "You are a helpful construction assistant."}
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a helpful construction assistant. "
+                        "Guidelines:\n"
+                        "1) When the user’s question is classified as 'general', simply answer "
+                        "   it using your broad knowledge. If uncertain, ask for clarification.\n"
+                        "2) When the user’s question is classified as 'specific' to the project, "
+                        "   rely on the project schedule data or context if available. "
+                        "   Only use the data you have; if unsure, say so.\n"
+                        "3) Be precise, concise, and avoid hallucinating details. If you lack info, "
+                        "   let the user know or ask for more details.\n"
+                    )
+                }
             ],
             "last_updated": datetime.utcnow()
         }
         print(f"New conversation document created with session_id: {session_id}")
         collection_conversations.insert_one(convo_doc)
-        
 
     # 2) Append user's message
     messages = convo_doc["messages"]
     messages.append({"role": "user", "content": body.user_message})
 
     # 3) Classify user question
-    classification = classify_query(body.user_message)  # "general" or "specific"
-
+    classification = classify_query(body.user_message)  # returns "general" or "specific"
     print(f"Classified user message: '{body.user_message}' as '{classification}'")
 
     # 4) Generate final answer
     if classification == "general":
+        # For general questions, we use the entire conversation (messages) as context:
         assistant_content = answer_general_question(messages)
     else:
         # classification == "specific"
+        # For project-specific questions, we do RAG using Pinecone, then GPT:
         assistant_content = answer_specific_question(body.user_message, body.project_name)
 
     # Append assistant answer to conversation messages
