@@ -25,8 +25,18 @@ def build_graph(json_file):
             if "predecessor" in task_data:
                 for pred in task_data["predecessor"]:
                     pred_id = pred["ObjectId"]
-                    G.add_edge(pred_id, current_node)
+                    lag = int(pred.get("lag", "0"))
+                    G.add_edge(pred_id, current_node, lag=lag)
 
+    # Check cyclic case in a schedule
+    try:
+        order = list(nx.topological_sort(G))
+
+    except nx.NetworkXUnfeasible:
+        # If a cycle exists, find one cycle (each tuple is (u, v, orientation))
+        cycle = nx.find_cycle(G, orientation='original')
+        print("Cycle found:")
+        print(cycle)
 
     # we need to have a database to store the graph, for now it just runs and goes away
 
